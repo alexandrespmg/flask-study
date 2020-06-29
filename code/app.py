@@ -1,8 +1,14 @@
 from flask import Flask, request
-from flask_restx import Resource, Api, abort
+from flask_restx import Resource, Api
+from flask_jwt import JWT, jwt_required
+
+from security import identity, authenticate
 
 app = Flask(__name__)
+app.secret_key = 'example-of-secret-key'
 api = Api(app)
+
+jwt = JWT(app, authenticate, identity)
 
 items = []
 
@@ -27,6 +33,7 @@ class Item(Resource):
 
 
 class ItemList(Resource):
+    @jwt_required()
     def get(self):
         return {'items': items}
 
